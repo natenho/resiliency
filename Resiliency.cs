@@ -58,54 +58,57 @@ public sealed class Resiliency
 		Try<Exception>(action, retryCount, retryTimeout, tryHandler);
 	}
 
-	/// <summary>
-	/// Executa uma <see cref="Action"/> e tenta novamente por até DefaultRetryCount vezes quando for disparada qualquer <see cref="Exception"/> 
-	/// </summary>
-	/// <param name="action">Ação a ser realizada</param>
-	/// <param name="tryHandler">Permitindo manipular os critérios para realizar as tentativas</param>
-	/// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Não aguarda para realizar novas tentativa.</remarks>
-	public static void Try(Action action, Action<ResiliencyTryHandler<Exception>> tryHandler)
+    /// <summary>
+    /// Executa uma <see cref="Action"/> e tenta novamente por até DefaultRetryCount vezes quando for disparada qualquer <see cref="Exception"/> 
+    /// </summary>
+    /// <param name="action">Ação a ser realizada</param>
+    /// <param name="tryHandler">Permitindo manipular os critérios para realizar as tentativas</param>
+    /// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Aguarda DefaultRetryTimeout segundos antes de realizar nova tentativa.</remarks>
+    public static void Try(Action action, Action<ResiliencyTryHandler<Exception>> tryHandler)
 	{
-		Try<Exception>(action, DefaultRetryCount, TimeSpan.FromMilliseconds(0), null);
+		Try<Exception>(action, DefaultRetryCount, TimeSpan.FromSeconds(DefaultRetryTimeout), null);
 	}
 
-	/// <summary>
-	/// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
-	/// </summary>
-	/// <param name="action">Ação a ser realizada</param>
-	/// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Não aguarda para realizar novas tentativa.</remarks>
-	public static void Try<TException>(Action action) where TException : Exception
+    /// <summary>
+    /// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="TException"/> 
+    /// </summary>
+    /// <param name="action">Ação a ser realizada</param>
+    /// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Aguarda DefaultRetryTimeout segundos antes de realizar nova tentativa.</remarks>
+    public static void Try<TException>(Action action) where TException : Exception
 	{
-		Try<TException>(action, DefaultRetryCount, TimeSpan.FromMilliseconds(0), null);
+		Try<TException>(action, DefaultRetryCount, TimeSpan.FromSeconds(DefaultRetryTimeout), null);
 	}
 
-	/// <summary>
-	/// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
-	/// </summary>
-	/// <param name="action">Ação a ser realizada</param>
-	public static void Try<TException>(Action action, int retryCount) where TException : Exception
+    /// <summary>
+    /// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="TException"/> 
+    /// </summary>
+    /// <param name="action">Ação a ser realizada</param>
+    /// <param name="retryCount"></param>
+    public static void Try<TException>(Action action, int retryCount) where TException : Exception
 	{
-		Try<TException>(action, retryCount, TimeSpan.FromMilliseconds(0), null);
+		Try<TException>(action, retryCount, TimeSpan.FromSeconds(DefaultRetryTimeout), null);
 	}
 
-	/// <summary>
-	/// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
-	/// </summary>
-	/// <param name="action">Ação a ser realizada</param>
-	public static void Try<TException>(Action action, int retryCount, TimeSpan retryTimeout) where TException : Exception
+    /// <summary>
+    /// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
+    /// </summary>
+    /// <param name="action">Ação a ser realizada</param>
+    /// <param name="retryCount"></param>
+    /// <param name="retryTimeout"></param>
+    public static void Try<TException>(Action action, int retryCount, TimeSpan retryTimeout) where TException : Exception
 	{
 		Try<TException>(action, retryCount, retryTimeout, null);
 	}
 
-	/// <summary>
-	/// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
-	/// </summary>
-	/// <param name="action">Ação a ser realizada</param>
-	/// <param name="tryHandler">Permitindo manipular os critérios para realizar as tentativas</param>
-	/// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Não aguarda para realizar novas tentativa.</remarks>
-	public static void Try<TException>(Action action, Action<ResiliencyTryHandler<TException>> tryHandler) where TException : Exception
+    /// <summary>
+    /// Executa uma <see cref="Action"/> e tenta novamente determinado número de vezes quando for disparada qualquer <see cref="Exception"/> 
+    /// </summary>
+    /// <param name="action">Ação a ser realizada</param>
+    /// <param name="tryHandler">Permitindo manipular os critérios para realizar as tentativas</param>
+    /// <remarks>Executa uma vez e realiza outras DefaultRetryCount tentativas em caso de exceção. Aguarda DefaultRetryTimeout segundos antes de realizar nova tentativa.</remarks>
+    public static void Try<TException>(Action action, Action<ResiliencyTryHandler<TException>> tryHandler) where TException : Exception
 	{
-		Try(action, DefaultRetryCount, TimeSpan.FromMilliseconds(0), tryHandler);
+		Try(action, DefaultRetryCount, TimeSpan.FromSeconds(DefaultRetryTimeout), tryHandler);
 	}
 
 	/// <summary>
@@ -119,7 +122,7 @@ public sealed class Resiliency
 	public static void Try<TException>(Action action, int retryCount, TimeSpan retryTimeout, Action<ResiliencyTryHandler<TException>> tryHandler) where TException : Exception
 	{
 		if (action == null)
-			throw new ArgumentNullException("action");
+			throw new ArgumentNullException(nameof(action));
 
 		while (retryCount-- > 0)
 		{
